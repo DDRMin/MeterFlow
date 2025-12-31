@@ -50,14 +50,16 @@ export async function submitReading(
     return { error: "You are not assigned to this meter" };
   }
 
-  // Get the last reading to validate it's not going backwards
+  // Get the last reading to validate (only for INCREASING type meters)
   const lastReading = await prisma.meterReading.findFirst({
     where: { meterId: data.meterId },
     orderBy: { recordedAt: "desc" },
   });
 
   const newValue = Number(data.readingValue);
-  if (lastReading && newValue < Number(lastReading.readingValue)) {
+  
+  // Only validate increasing values for INCREASING type meters
+  if (meter.readingType === "INCREASING" && lastReading && newValue < Number(lastReading.readingValue)) {
     return { error: "Reading value cannot be less than the previous reading" };
   }
 

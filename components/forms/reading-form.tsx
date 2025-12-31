@@ -3,13 +3,16 @@
 import { useActionState } from "react";
 import { submitReading } from "@/app/dashboard/reader/meters/actions";
 
+type ReadingType = "INCREASING" | "NORMAL";
+
 interface ReadingFormProps {
   meterId: string;
   meterCode: string;
+  readingType: ReadingType;
   lastReading?: number;
 }
 
-export function ReadingForm({ meterId, meterCode, lastReading }: ReadingFormProps) {
+export function ReadingForm({ meterId, meterCode, readingType, lastReading }: ReadingFormProps) {
   const [state, action, isPending] = useActionState(submitReading, undefined);
 
   // Format current date/time for datetime-local input (YYYY-MM-DDTHH:MM)
@@ -17,6 +20,8 @@ export function ReadingForm({ meterId, meterCode, lastReading }: ReadingFormProp
   const defaultDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
     .toISOString()
     .slice(0, 16);
+
+  const isIncreasing = readingType === "INCREASING";
 
   return (
     <form action={action} className="space-y-4">
@@ -42,13 +47,19 @@ export function ReadingForm({ meterId, meterCode, lastReading }: ReadingFormProp
           id="readingValue"
           name="readingValue"
           step="0.01"
-          min={lastReading || 0}
+          min={isIncreasing && lastReading ? lastReading : 0}
           required
           className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
-          placeholder={lastReading ? `Must be ≥ ${lastReading.toFixed(2)}` : "Enter reading value"}
+          placeholder={
+            isIncreasing && lastReading 
+              ? `Must be ≥ ${lastReading.toFixed(2)}` 
+              : "Enter reading value"
+          }
         />
         <p className="mt-1 text-xs text-gray-600">
-          Must be a positive number{lastReading ? ` greater than or equal to ${lastReading.toFixed(2)}` : ""}
+          {isIncreasing && lastReading 
+            ? `Must be greater than or equal to ${lastReading.toFixed(2)}` 
+            : "Enter any positive value"}
         </p>
       </div>
 

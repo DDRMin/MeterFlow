@@ -13,7 +13,7 @@ export function ContactForm({ currentContact }: ContactFormProps) {
   return (
     <form action={action} className="space-y-4">
       <div>
-        <label htmlFor="contactNumber" className="block text-sm font-medium text-gray-600">
+        <label htmlFor="contactNumber" className="block text-sm font-medium text-gray-700">
           Phone Number
         </label>
         <input
@@ -23,7 +23,7 @@ export function ContactForm({ currentContact }: ContactFormProps) {
           defaultValue={currentContact}
           required
           placeholder="+1234567890"
-          className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+          className="mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
         />
       </div>
 

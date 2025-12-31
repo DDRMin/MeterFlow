@@ -9,7 +9,7 @@ export function PasswordForm() {
   return (
     <form action={action} className="space-y-4">
       <div>
-        <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-600">
+        <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700">
           Current Password
         </label>
         <input
@@ -17,12 +17,12 @@ export function PasswordForm() {
           id="currentPassword"
           name="currentPassword"
           required
-          className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+          className="mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
         />
       </div>
 
       <div>
-        <label htmlFor="newPassword" className="block text-sm font-medium text-gray-600">
+        <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">
           New Password
         </label>
         <input
@@ -31,12 +31,12 @@ export function PasswordForm() {
           name="newPassword"
           required
           minLength={8}
-          className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+          className="mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
         />
       </div>
 
       <div>
-        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-600">
+        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
           Confirm New Password
         </label>
         <input
@@ -45,7 +45,7 @@ export function PasswordForm() {
           name="confirmPassword"
           required
           minLength={8}
-          className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+          className="mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
         />
       </div>
 

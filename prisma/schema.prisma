@@ -17,6 +17,11 @@ enum MeterStatus {
   NOT_WORKING
 }
 
+enum ReadingType {
+  INCREASING
+  NORMAL
+}
+
 model User {
   id              String         @id @default(uuid())
   name            String
@@ -40,6 +45,7 @@ model Meter {
   meterCode      String          @unique
   location       String
   status         MeterStatus     @default(ENABLED)
+  readingType    ReadingType     @default(INCREASING)
   assignedUserId String?
   createdAt      DateTime        @default(now())
 

@@ -14,13 +14,13 @@ export function ImageUploadForm({ currentImage }: ImageUploadFormProps) {
     <form action={action} className="space-y-4">
       {currentImage && (
         <div className="mb-4">
-          <p className="text-sm font-medium text-gray-600 mb-2">Current Image</p>
+          <p className="text-sm font-medium text-gray-700 mb-2">Current Image</p>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={currentImage} alt="Current profile" className="h-24 w-24 rounded-full object-cover" />
         </div>
       )}
       <div>
-        <label htmlFor="image" className="block text-sm font-medium text-gray-600">
+        <label htmlFor="image" className="block text-sm font-medium text-gray-700">
           Upload New Image
         </label>
         <input
@@ -29,7 +29,7 @@ export function ImageUploadForm({ currentImage }: ImageUploadFormProps) {
           name="image"
           accept="image/jpeg,image/jpg,image/png,image/webp"
           required
-          className="mt-1 w-full text-sm text-gray-600 file:mr-4 file:rounded-lg file:border-0 file:bg-emerald-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-emerald-700 hover:file:bg-emerald-100"
+          className="mt-1 w-full text-sm text-gray-900 file:mr-4 file:rounded-lg file:border-0 file:bg-emerald-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-emerald-700 hover:file:bg-emerald-100"
         />
         <p className="mt-1 text-xs text-gray-600">
           JPEG, PNG, or WebP. Max 5MB.

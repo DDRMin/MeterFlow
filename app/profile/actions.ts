@@ -17,7 +17,10 @@ const passwordSchema = z
     path: ["confirmPassword"],
   });
 
-export async function updatePassword(formData: FormData) {
+export async function updatePassword(
+  prevState: { error?: string; success?: boolean } | undefined,
+  formData: FormData
+) {
   const session = await auth();
   if (!session?.user?.id) {
     return { error: "Unauthorized" };
@@ -63,7 +66,10 @@ const contactSchema = z.object({
   contactNumber: z.string().min(10).max(20),
 });
 
-export async function updateContact(formData: FormData) {
+export async function updateContact(
+  prevState: { error?: string; success?: boolean } | undefined,
+  formData: FormData
+) {
   const session = await auth();
   if (!session?.user?.id) {
     return { error: "Unauthorized" };

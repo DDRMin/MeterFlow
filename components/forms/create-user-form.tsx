@@ -1,11 +1,21 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useState, useEffect } from "react";
 import { createUser } from "@/app/dashboard/admin/users/actions";
 
 export function CreateUserForm() {
   const [state, action, isPending] = useActionState(createUser, undefined);
   const [showForm, setShowForm] = useState(false);
+
+  // Close form on successful submission
+  useEffect(() => {
+    if (state?.success) {
+      const timer = setTimeout(() => {
+        setShowForm(false);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [state?.success]);
 
   if (!showForm) {
     return (

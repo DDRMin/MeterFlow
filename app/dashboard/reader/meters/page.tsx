@@ -67,6 +67,7 @@ export default async function ReaderMetersPage() {
               <ReadingForm
                 meterId={meter.id}
                 meterCode={meter.meterCode}
+                readingType={meter.readingType}
                 lastReading={lastReading ? Number(lastReading.readingValue) : undefined}
               />
             </div>

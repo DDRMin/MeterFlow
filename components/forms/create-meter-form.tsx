@@ -1,11 +1,21 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useState, useEffect } from "react";
 import { createMeter } from "@/app/dashboard/admin/meters/actions";
 
 export function CreateMeterForm() {
   const [state, action, isPending] = useActionState(createMeter, undefined);
   const [showForm, setShowForm] = useState(false);
+
+  // Close form on successful submission
+  useEffect(() => {
+    if (state?.success) {
+      const timer = setTimeout(() => {
+        setShowForm(false);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [state?.success]);
 
   if (!showForm) {
     return (
@@ -69,6 +79,24 @@ export function CreateMeterForm() {
             <option value="DISABLED">Disabled</option>
             <option value="NOT_WORKING">Not Working</option>
           </select>
+        </div>
+
+        <div>
+          <label htmlFor="readingType" className="block text-sm font-medium text-gray-700">
+            Reading Type
+          </label>
+          <select
+            id="readingType"
+            name="readingType"
+            defaultValue="INCREASING"
+            className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+          >
+            <option value="INCREASING">Increasing (cumulative)</option>
+            <option value="NORMAL">Normal (any value)</option>
+          </select>
+          <p className="mt-1 text-xs text-gray-600">
+            Increasing: readings must be greater than or equal to the last reading. Normal: any value is accepted.
+          </p>
         </div>
 
         {state?.error && (
