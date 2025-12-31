@@ -1,22 +1,50 @@
 import { redirect } from "next/navigation";
 
 import { auth, signIn } from "@/auth";
+import { AuthError } from "next-auth";
+import LoginForm from "./login-form";
 
-async function login(formData: FormData) {
+type FormState = { error: string; email?: string } | undefined;
+
+async function login(prevState: FormState, formData: FormData): Promise<FormState> {
   "use server";
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
 
-  await signIn("credentials", {
-    email,
-    password,
-    redirectTo: "/dashboard/admin",
-  });
+  try {
+    await signIn("credentials", {
+      email,
+      password,
+      redirectTo: "/dashboard/admin",
+    });
+  } catch (error) {
+    if (error instanceof AuthError) {
+      const errorMessage = error.cause?.err?.message;
+      
+      if (errorMessage === "USER_NOT_FOUND") {
+        return { error: "User doesn't exist.", email };
+      }
+      
+      if (errorMessage === "INVALID_PASSWORD") {
+        return { error: "Password is incorrect.", email };
+      }
+      
+      return { error: "Invalid email or password.", email };
+    }
+    throw error;
+  }
 }
 
-export default async function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
   const session = await auth();
   if (session?.user) redirect("/dashboard/admin");
+
+  const params = await searchParams;
+  const urlError = params.error;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-900 px-4">
@@ -26,38 +54,14 @@ export default async function LoginPage() {
           <h1 className="text-2xl font-semibold">Sign in</h1>
           <p className="text-sm text-gray-300">Use the credentials provided by your administrator.</p>
         </div>
-        <form action={login} className="space-y-4">
-          <div className="space-y-1">
-            <label htmlFor="email" className="text-sm font-medium text-gray-100">
-              Email
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              className="w-full rounded-lg border border-emerald-600/30 bg-emerald-950/20 px-3 py-2 text-sm text-white outline-none ring-0 transition focus:border-emerald-500"
-            />
+        {urlError && (
+          <div className="rounded-lg border border-red-500/50 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+            {urlError === "CredentialsSignin"
+              ? "Invalid email or password."
+              : "Something went wrong. Please try again."}
           </div>
-          <div className="space-y-1">
-            <label htmlFor="password" className="text-sm font-medium text-gray-100">
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              className="w-full rounded-lg border border-emerald-600/30 bg-emerald-950/20 px-3 py-2 text-sm text-white outline-none ring-0 transition focus:border-emerald-500"
-            />
-          </div>
-          <button
-            type="submit"
-            className="flex w-full items-center justify-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700"
-          >
-            Continue
-          </button>
-        </form>
+        )}
+        <LoginForm login={login} />
       </div>
     </div>
   );

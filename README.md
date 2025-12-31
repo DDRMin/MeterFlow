@@ -16,11 +16,21 @@ pnpm install
 ```bash
 docker compose up -d db
 ```
-4) Apply schema and generate client:
+4) Apply schema and seed admin user:
 ```bash
-pnpm prisma migrate dev --name init
-# or: pnpm prisma db push
+# Run migrations
+pnpm exec prisma migrate deploy
+
+# Seed admin user
+pnpm run seed
+
+# Or use the automated setup script (Windows):
+.\setup-db.bat
 ```
+Default admin credentials:
+- Email: `admin@meterflow.com`
+- Password: `admin123` (change after first login!)
+
 5) Run the app:
 ```bash
 pnpm dev
@@ -32,6 +42,7 @@ pnpm dev
 - app/dashboard: admin + reader areas (server components)
 - app/login: credential sign-in (server action)
 - app/meters/[meterId]: per-meter analytics placeholder
+- auth.ts: NextAuth config (30-day sessions, auto-refresh every 24h)
 - prisma/schema.prisma: DB models (User, Meter, MeterReading + NextAuth tables)
 - lib/prisma.ts: Prisma singleton
 - lib/uploads/local.ts: local file storage helper (S3-ready swap)

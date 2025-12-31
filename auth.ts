@@ -3,6 +3,7 @@ import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcrypt";
 import { z } from "zod";
+import { type Role } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
 
@@ -15,6 +16,8 @@ const authOptions: NextAuthConfig = {
   adapter: PrismaAdapter(prisma),
   session: {
     strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days in seconds
+    updateAge: 24 * 60 * 60,   // Refresh session every 24 hours
   },
   secret: process.env.AUTH_SECRET,
   trustHost: true,
@@ -30,10 +33,18 @@ const authOptions: NextAuthConfig = {
 
         const { email, password } = parsed.data;
         const user = await prisma.user.findUnique({ where: { email } });
-        if (!user?.passwordHash) return null;
+        
+        // User doesn't exist
+        if (!user?.passwordHash) {
+          throw new Error("USER_NOT_FOUND");
+        }
 
         const isValid = await bcrypt.compare(password, user.passwordHash);
-        if (!isValid) return null;
+        
+        // Wrong password
+        if (!isValid) {
+          throw new Error("INVALID_PASSWORD");
+        }
 
         return {
           id: user.id,
@@ -60,7 +71,7 @@ const authOptions: NextAuthConfig = {
     async session({ session, token }) {
       if (session.user && token) {
         session.user.id = token.sub ?? "";
-        session.user.role = (token.role as string | undefined) ?? "READER";
+        session.user.role = (token.role as Role | undefined) ?? "READER";
       }
       return session;
     },
