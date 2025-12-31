@@ -2,7 +2,9 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { QuickAssignForm } from "@/components/forms/quick-assign-form";
 import { StatCard } from "@/components/cards/stat-card";
-import { UnassignMeterButton } from "../users/[userId]/unassign-meter-button";
+import { UnassignMeterButton } from "@/components/buttons/unassign-meter-button";
+import { CreateMeterForm } from "@/components/forms/create-meter-form";
+import { MeterActionsDropdown } from "@/components/buttons/meter-actions-dropdown";
 
 export default async function AdminMetersPage() {
   const meters = await prisma.meter.findMany({
@@ -30,11 +32,14 @@ export default async function AdminMetersPage() {
 
   return (
     <section className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-gray-900">Meters</h1>
-        <p className="mt-1 text-sm text-gray-600">
-          Manage meter assignments and view meter details
-        </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900">Meters</h1>
+          <p className="mt-1 text-sm text-gray-600">
+            Manage meter assignments and view meter details
+          </p>
+        </div>
+        <CreateMeterForm />
       </div>
 
       {/* Stats */}
@@ -86,12 +91,15 @@ export default async function AdminMetersPage() {
                   </td>
                   <td className="px-6 py-4 text-gray-900">{meter._count.readings}</td>
                   <td className="px-6 py-4">
-                    <Link
-                      href={`/meters/${meter.id}`}
-                      className="text-emerald-600 hover:text-emerald-700"
-                    >
-                      View Details
-                    </Link>
+                    <div className="flex items-center gap-2">
+                      <MeterActionsDropdown meter={meter} />
+                      <Link
+                        href={`/meters/${meter.id}`}
+                        className="inline-flex items-center rounded-md border border-emerald-600 bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      >
+                        View
+                      </Link>
+                    </div>
                   </td>
                 </tr>
               ))}
