@@ -1,0 +1,19 @@
+import { NextResponse } from "next/server";
+
+import { auth } from "@/auth";
+
+export async function GET() {
+  const session = await auth();
+  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (session.user.role !== "ADMIN") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+  return NextResponse.json({ status: "ok", message: "Meter listing placeholder" });
+}
+
+export async function POST() {
+  const session = await auth();
+  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (session.user.role !== "ADMIN") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+  return NextResponse.json({ status: "ok", message: "Meter creation placeholder" });
+}

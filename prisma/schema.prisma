@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 enum Role {
@@ -47,7 +46,7 @@ model MeterReading {
   id           String    @id @default(uuid())
   meterId      String
   userId       String
-  readingValue Decimal   @db.Numeric(12, 2)
+  readingValue Decimal   @db.Decimal(12, 2)
   recordedAt   DateTime
   createdAt    DateTime  @default(now())
 

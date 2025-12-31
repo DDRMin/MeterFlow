@@ -1,0 +1,124 @@
+import { notFound } from "next/navigation";
+import { getMeterAnalytics } from "@/lib/analytics";
+import { ReadingLineChart, ConsumptionBarChart } from "@/components/charts";
+
+interface MeterDetailPageProps {
+  params: { meterId: string };
+}
+
+export default async function MeterDetailPage({ params }: MeterDetailPageProps) {
+  const analytics = await getMeterAnalytics(params.meterId);
+
+  if (!analytics) {
+    notFound();
+  }
+
+  const { meter, readings, stats } = analytics;
+
+  return (
+    <section className="space-y-6">
+      {/* Header */}
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-slate-900">{meter.meterCode}</h1>
+          <p className="mt-1 text-sm text-slate-600">{meter.location}</p>
+          {meter.assignedUser && (
+            <p className="mt-2 text-sm text-slate-500">
+              Assigned to: <span className="font-medium text-slate-900">{meter.assignedUser.name}</span>
+            </p>
+          )}
+        </div>
+        <a
+          href={`/api/export?meterId=${params.meterId}`}
+          className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700"
+        >
+          Export Meter Data
+        </a>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid gap-4 md:grid-cols-4">
+        <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+          <p className="text-xs font-medium text-slate-500">Total Readings</p>
+          <p className="mt-2 text-2xl font-semibold text-slate-900">{stats.totalReadings}</p>
+        </div>
+
+        <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+          <p className="text-xs font-medium text-slate-500">Latest Reading</p>
+          <p className="mt-2 text-2xl font-semibold text-slate-900">
+            {stats.latestReading ? Number(stats.latestReading).toFixed(2) : "—"}
+          </p>
+        </div>
+
+        <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+          <p className="text-xs font-medium text-slate-500">Total Consumption</p>
+          <p className="mt-2 text-2xl font-semibold text-slate-900">{stats.totalConsumption.toFixed(2)}</p>
+        </div>
+
+        <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+          <p className="text-xs font-medium text-slate-500">Avg Daily Usage</p>
+          <p className="mt-2 text-2xl font-semibold text-slate-900">{stats.avgDailyConsumption.toFixed(2)}</p>
+        </div>
+      </div>
+
+      {/* Reading Trend Chart */}
+      <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 className="mb-4 text-lg font-semibold text-slate-900">Reading History</h2>
+        <ReadingLineChart
+          data={readings.map((r) => ({
+            date: r.recordedAt,
+            value: r.value,
+          }))}
+        />
+      </div>
+
+      {/* Consumption Chart */}
+      {readings.length > 1 && (
+        <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="mb-4 text-lg font-semibold text-slate-900">Consumption Analysis</h2>
+          <ConsumptionBarChart
+            data={readings.map((r) => ({
+              date: r.recordedAt,
+              delta: r.delta,
+            }))}
+          />
+        </div>
+      )}
+
+      {/* Recent Readings Table */}
+      <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 className="mb-4 text-lg font-semibold text-slate-900">Recent Readings</h2>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="border-b border-slate-200 text-xs uppercase text-slate-500">
+              <tr>
+                <th className="pb-3 pr-4">Date</th>
+                <th className="pb-3 pr-4">Reading Value</th>
+                <th className="pb-3 pr-4">Delta</th>
+                <th className="pb-3 pr-4">Daily Avg</th>
+                <th className="pb-3 pr-4">Recorded By</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {readings.slice(-10).reverse().map((reading) => (
+                <tr key={reading.id} className="hover:bg-slate-50">
+                  <td className="py-3 pr-4 text-slate-900">
+                    {reading.recordedAt.toLocaleDateString()}
+                  </td>
+                  <td className="py-3 pr-4 font-medium text-slate-900">{reading.value.toFixed(2)}</td>
+                  <td className={`py-3 pr-4 font-medium ${reading.delta > 0 ? "text-green-600" : "text-slate-400"}`}>
+                    {reading.delta > 0 ? `+${reading.delta.toFixed(2)}` : "—"}
+                  </td>
+                  <td className="py-3 pr-4 text-slate-600">
+                    {reading.dailyAverage > 0 ? reading.dailyAverage.toFixed(2) : "—"}
+                  </td>
+                  <td className="py-3 pr-4 text-slate-600">{reading.recordedBy}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  );
+}
