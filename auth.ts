@@ -1,6 +1,5 @@
 import NextAuth, { type NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcrypt";
 import { z } from "zod";
 import { type Role } from "@prisma/client";
@@ -13,7 +12,6 @@ const credentialsSchema = z.object({
 });
 
 const authOptions: NextAuthConfig = {
-  adapter: PrismaAdapter(prisma),
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days in seconds
